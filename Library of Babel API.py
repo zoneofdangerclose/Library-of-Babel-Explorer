@@ -32,16 +32,35 @@ page = 1
 # </PRE>
 
 body = open(f'{file_dir}body.txt', 'r').read()
+# print(body)
+body = body.replace('\n', '')
+# print(body)
+body_str = ''
+body_str = body_str.join(body)
+body_str = body_str.split(' ')
 
-for word in body.split(' '):
-    # if re.match("\n", word):
-    word_len_temp = len(word)
-    #average word size between 4 and 8 letters
-    if word_len_temp > 3 and word_len_temp < 9:
+def word_filter(words: list[str]) -> list[str]:
+    word_list = []
+    for word in words:
+        # if re.match("\n", word):
+        word_len_temp = len(word)
+        #average word size between 4 and 8 letters
+        if word_len_temp < 4 or word_len_temp > 8:
+            continue
+        #handled ealier
+        # if word == '\n':
+        #     continue
+        #allowance for one special character per word, contractions and sentence punct
+        ##a more agressive filter would allow none
+        if len(re.findall('[^a-z]',word)) > 1:
+            continue
+        #average consonant to vowel ratio 60:40, expected random ratio 50:50 a little too close to be useful
+        word_list.append(word)
 
-        print(word)
+    return word_list
 
-        #average consonant to vowel ratio 60:40, expected random ratio 50:50
-        ##what about non-letter characters
 
+word_list_filtered = word_filter(body_str)
+# print(word_list_filtered)
+print(f'words passed filter: {round(len(word_list_filtered)/len(body_str),2)}%')
 
