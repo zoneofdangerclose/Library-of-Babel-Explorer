@@ -35,7 +35,7 @@ book_query = f'{root_dir}/book.cgi?'
 hex_var = 0
 wall = 'w1'
 shelf = 's1'
-vol = 'v01'
+vol = 'v02'
 # page = 1
 
 query_dict = {}
@@ -43,7 +43,7 @@ query_dict = {}
 
 complete_freq_list = []
 defined_list = []
-pages_list = range(100)
+pages_list = range(410)
 for page in pages_list:
     # print(page)
     query_string = f'{book_query}{hex_var}-{wall}-{shelf}-{vol}:{page}'
