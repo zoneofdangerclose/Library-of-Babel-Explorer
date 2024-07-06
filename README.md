@@ -1,6 +1,8 @@
 # Library-of-Babel-Explorer
 Fun data project for exploring API's, strings, and drawing order from chaos 
 
+https://github.com/users/zoneofdangerclose/projects/1
+
 The filtering is agressive, the point is not to find ever word, but to find clusters of probable words to locate larger messages.
 
 Total number of words found: 25
