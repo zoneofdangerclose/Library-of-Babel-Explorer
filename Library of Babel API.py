@@ -4,6 +4,11 @@ import re
 import os
 from english_words import get_english_words_set
 import json
+import string
+import random
+import sys
+import subprocess
+
 
 def word_filter(words: list[str]) -> list[str]:
     word_list = []
@@ -25,80 +30,66 @@ def word_filter(words: list[str]) -> list[str]:
 
     return word_list
 
-file_dir = 'C:/Users/cgzho/OneDrive/Documents/GitHub/Library-of-Babel-Explorer/'
+file_dir = 'C:/Users/cgzho/OneDrive/Documents/GitHub/'
+explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
+pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
 
-root_dir = 'https://libraryofbabel.info'
+#in a rare case stackoverflow was actually pretty useful and taught me something
+##the first argument of the subprocess.run must be an executable, which is very clear in the current docs https://docs.python.org/3/library/subprocess.html
+###this is helpful in understanding that common bash commands like "ls" aren't magic text, they are references to the 
+####bash standard library of executables, which explains why awk can sometimes be refered to as a seperate language, neat!
+# subprocess.run(["python.exe", pybel_cli, "--help"])
 
-book_query = f'{root_dir}/book.cgi?'
-
-# Enter any combination of up to 3260 numbers and/or lower case letters.
 hex_var = 0
-wall = 'w1'
-shelf = 's1'
-vol = 'v02'
-# page = 1
+wall = 1
+shelf = 1
+# vol = 1
+# page = 0
 
-query_dict = {}
+series = range(10)
+for vol in series:
+    print(vol)
 
+    query_dict = {}
+    complete_freq_list = []
+    defined_list = []
 
-complete_freq_list = []
-defined_list = []
-pages_list = range(410)
-for page in pages_list:
-    # print(page)
-    query_string = f'{book_query}{hex_var}-{wall}-{shelf}-{vol}:{page}'
-    request = requests.get(query_string)
-    request_page = request.text
+    pages_list = range(410)
+    for page in pages_list:
 
-    body = re.search('<PRE id = "textblock">.*</PRE>', request_page, flags=re.DOTALL).group()
-    body = body[23:-6]
-    # open(f'{file_dir}body_{page}.txt', "w").write(body)
+        query_string = f'{hex_var}:{wall}:{shelf}:{vol}:{page}'
+        body = subprocess.run(["python.exe", pybel_cli, '--checkout', query_string], capture_output=True, text=True)
+        body = body.stdout
 
-    # request.status_code
-    # print(html.unescape(request.text))
-    # https://libraryofbabel.info/book.cgi?0-w1-s1-v01:1
-    # print(re.search('<PRE id = "textblock">.*</PRE>', request_page, flags=re.DOTALL).group())
-    # <PRE id = "textblock">
-    # </PRE>
+        body = re.sub('Title:.*\n', '', body)
+        body = re.sub('\n', '', body)
+        
+        body_str = body.split(' ')
 
-    # body = open(f'{file_dir}body.txt', 'r').read()
-    # print(body)
-    body = body.replace('\n', '')
-    # print(body)
-    body_str = ''
-    body_str = body_str.join(body)
-    body_str = body_str.split(' ')
+        word_list_filtered = word_filter(body_str)
 
+        complete_freq_list.append(round(len(word_list_filtered)/len(body_str),3))
 
+        web2lowerset = get_english_words_set(['web2'], lower=True)
 
-    word_list_filtered = word_filter(body_str)
-    # print(word_list_filtered)
-    # print(f'words passed filter: {round(len(word_list_filtered)/len(body_str),2)}%')
-    complete_freq_list.append(round(len(word_list_filtered)/len(body_str),3))
+        word_list_filtered_defined = []
 
-    web2lowerset = get_english_words_set(['web2'], lower=True)
+        for word in word_list_filtered:
+            if word in web2lowerset:
+                word_list_filtered_defined.append(word)
 
-    word_list_filtered_defined = []
+        if word_list_filtered_defined:
 
-    for word in word_list_filtered:
-        if word in web2lowerset:
-            word_list_filtered_defined.append(word)
+            print(f'Defined words: {word_list_filtered_defined}')
 
-    if word_list_filtered_defined:
+            query_dict.update({query_string: {'defined_list': word_list_filtered_defined,
+                                            'percent_pass_filter': round(len(word_list_filtered)/len(body_str),3)
+                                            }
+                                }
+                            )
 
-        print(f'Defined words: {word_list_filtered_defined}')
+        defined_list = defined_list + word_list_filtered_defined
 
-        query_dict.update({query_string: {'defined_list': word_list_filtered_defined,
-                                          'percent_pass_filter': round(len(word_list_filtered)/len(body_str),3)
-                                          }
-                            }
-                        )
+    open(f'{explorer_dir}data_dir/passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
 
-    defined_list = defined_list + word_list_filtered_defined
-
-open(f'{file_dir}passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
-
-# print(json.dumps(query_dict))
-
-open(f'{file_dir}defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))
-# print(f'Total Defined List: {defined_list}')
+    open(f'{explorer_dir}data_dir/defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))
