@@ -30,7 +30,8 @@ def word_filter(words: list[str]) -> list[str]:
 
     return word_list
 
-file_dir = 'C:/Users/cgzho/OneDrive/Documents/GitHub/'
+# file_dir = 'C:/Users/cgzho/OneDrive/Documents/GitHub/'
+file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
 explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
 pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
 
@@ -46,7 +47,7 @@ shelf = 0
 # vol = 1
 # page = 0
 
-series = range(100)
+series = range(1)
 for vol in series:
     print(vol)
 
@@ -54,7 +55,7 @@ for vol in series:
     complete_freq_list = []
     defined_list = []
 
-    pages_list = range(410)
+    pages_list = range(1)
     for page in pages_list:
 
         query_string = f'{hex_var}:{wall}:{shelf}:{vol}:{page}'
@@ -90,6 +91,6 @@ for vol in series:
 
         defined_list = defined_list + word_list_filtered_defined
 
-    open(f'{explorer_dir}data_dir/passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
+    # open(f'{explorer_dir}data_dir/passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
 
-    open(f'{explorer_dir}data_dir/defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))
+    # open(f'{explorer_dir}data_dir/defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))
