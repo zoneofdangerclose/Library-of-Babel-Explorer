@@ -41,12 +41,12 @@ pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
 # subprocess.run(["python.exe", pybel_cli, "--help"])
 
 hex_var = 0
-wall = 1
-shelf = 1
+wall = 0
+shelf = 0
 # vol = 1
 # page = 0
 
-series = range(10)
+series = range(100)
 for vol in series:
     print(vol)
 
