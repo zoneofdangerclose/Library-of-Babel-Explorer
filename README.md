@@ -5,7 +5,7 @@ https://github.com/users/zoneofdangerclose/projects/1
 
 The filtering is agressive, the point is not to find ever word, but to find clusters of probable words to locate larger messages.
 
-Total number of words found: 1294
+Total number of words found: 3682
 
 Longest sentence: ""
 

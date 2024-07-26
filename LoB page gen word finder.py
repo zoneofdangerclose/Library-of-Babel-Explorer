@@ -1,12 +1,6 @@
-import requests
-import html
 import re
 import os
-from english_words import get_english_words_set
 import json
-import string
-import random
-import sys
 import subprocess
 
 
@@ -30,7 +24,6 @@ def word_filter(words: list[str]) -> list[str]:
 
     return word_list
 
-# file_dir = 'C:/Users/cgzho/OneDrive/Documents/GitHub/'
 file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
 explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
 pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
@@ -41,13 +34,17 @@ pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
 ####bash standard library of executables, which explains why awk can sometimes be refered to as a seperate language, neat!
 # subprocess.run(["python.exe", pybel_cli, "--help"])
 
+dictionary_shard_file = f'{explorer_dir}data_dir/dictionary_shard.json'
+dictionary_shard_dict = json.load(open(dictionary_shard_file))
+# print(dictionary_shard_dict['a'])
+
 hex_var = 0
 wall = 0
-shelf = 0
+shelf = 2
 # vol = 1
 # page = 0
 
-series = range(1)
+series = range(100)
 for vol in series:
     print(vol)
 
@@ -55,7 +52,7 @@ for vol in series:
     complete_freq_list = []
     defined_list = []
 
-    pages_list = range(1)
+    pages_list = range(410)
     for page in pages_list:
 
         query_string = f'{hex_var}:{wall}:{shelf}:{vol}:{page}'
@@ -71,12 +68,20 @@ for vol in series:
 
         complete_freq_list.append(round(len(word_list_filtered)/len(body_str),3))
 
-        web2lowerset = get_english_words_set(['web2'], lower=True)
+        # web2lowerset = get_english_words_set(['web2'], lower=True)
+        
 
         word_list_filtered_defined = []
 
         for word in word_list_filtered:
-            if word in web2lowerset:
+            # print(word)
+            first_char = word[0]
+
+            if first_char not in dictionary_shard_dict.keys():
+                continue
+
+            shard_temp = dictionary_shard_dict[word[0]]
+            if word in shard_temp:
                 word_list_filtered_defined.append(word)
 
         if word_list_filtered_defined:
@@ -91,6 +96,6 @@ for vol in series:
 
         defined_list = defined_list + word_list_filtered_defined
 
-    # open(f'{explorer_dir}data_dir/passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
+    open(f'{explorer_dir}data_dir/passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
 
-    # open(f'{explorer_dir}data_dir/defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))
+    open(f'{explorer_dir}data_dir/defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))

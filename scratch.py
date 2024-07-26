@@ -23,6 +23,7 @@ file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
 explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
 data_dir = f'{explorer_dir}data_dir/'
 
+
 # print(f'{data_dir}*.json')
 # print(glob.iglob(f'{data_dir}*.json'))
 
@@ -30,9 +31,12 @@ json_files = glob.iglob(f'{data_dir}*.json')
 # finite = 0
 word_count = 0
 one_pass_filter_list = []
+two_pass_filter_list = []
 more_pass_filter_list = []
 for file in json_files:
     # if finite < 1:
+    if file.find('dictionary_shard') > -1:
+        continue
     json_dict = json.load(open(file))
     keys = json_dict.keys()
     for key in keys:
@@ -40,14 +44,22 @@ for file in json_files:
         word_count = word_count + word_count_temp
 
         if word_count_temp == 1:
+            # pass
             one_pass_filter_list.append(json_dict[key]['percent_pass_filter'])
+        elif word_count_temp == 2:
+            # pass
+            # print(json_dict[key]['defined_list'])
+            two_pass_filter_list.append(json_dict[key]['percent_pass_filter'])
         else:
+            # pass
             more_pass_filter_list.append(json_dict[key]['percent_pass_filter'])
+            # print(json_dict[key]['defined_list'])
         # print(json_dict[key]['percent_pass_filter'])
     # finite += 1
 
 print(word_count)
 print(one_pass_filter_list)
+print(two_pass_filter_list)
 print(more_pass_filter_list)
 
 # def word_filter(words: list[str]) -> list[str]:
