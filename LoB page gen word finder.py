@@ -2,6 +2,7 @@ import re
 import os
 import json
 import subprocess
+from multiprocessing import Pool
 
 
 def word_filter(words: list[str]) -> list[str]:
@@ -25,6 +26,7 @@ def word_filter(words: list[str]) -> list[str]:
     return word_list
 
 file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
+print(os.getcwd())
 explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
 pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
 
@@ -40,14 +42,16 @@ dictionary_shard_dict = json.load(open(dictionary_shard_file))
 
 hex_var = 0
 wall = 0
-shelf = 2
+shelf = 4
 # vol = 1
 # page = 0
 
-series = range(100)
-for vol in series:
-    print(vol)
+series = range(40,100)
 
+def wordgen(series,hex_var=0,wall=0,shelf=4):
+    vol = series
+    # for vol in series:
+    print(vol)
     query_dict = {}
     complete_freq_list = []
     defined_list = []
@@ -99,3 +103,10 @@ for vol in series:
     open(f'{explorer_dir}data_dir/passfilter_stats_{hex_var}_{wall}_{shelf}_{vol}.txt', "w").write(str(complete_freq_list))
 
     open(f'{explorer_dir}data_dir/defined_wordlist_{hex_var}_{wall}_{shelf}_{vol}.json', "w").write(json.dumps(query_dict))
+
+
+
+if __name__ == '__main__':
+    
+
+    Pool(2).map(wordgen, list(series))
