@@ -5,6 +5,17 @@ import subprocess
 from multiprocessing import Pool
 
 
+
+file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
+print(os.getcwd())
+explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
+pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
+
+dictionary_shard_file = f'{explorer_dir}data_dir/dictionary_shard.json'
+dictionary_shard_dict = json.load(open(dictionary_shard_file))
+
+# trigram_table_file = f'{explorer_dir}data_dir/trigram_table.txt'
+
 def word_filter(words: list[str]) -> list[str]:
     word_list = []
     for word in words:
@@ -25,20 +36,13 @@ def word_filter(words: list[str]) -> list[str]:
 
     return word_list
 
-file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
-print(os.getcwd())
-explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
-pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
-
 #in a rare case stackoverflow was actually pretty useful and taught me something
 ##the first argument of the subprocess.run must be an executable, which is very clear in the current docs https://docs.python.org/3/library/subprocess.html
 ###this is helpful in understanding that common bash commands like "ls" aren't magic text, they are references to the 
 ####bash standard library of executables, which explains why awk can sometimes be refered to as a seperate language, neat!
 # subprocess.run(["python.exe", pybel_cli, "--help"])
 
-dictionary_shard_file = f'{explorer_dir}data_dir/dictionary_shard.json'
-dictionary_shard_dict = json.load(open(dictionary_shard_file))
-# print(dictionary_shard_dict['a'])
+
 
 hex_var = 0
 wall = 0
