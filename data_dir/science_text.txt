@@ -1,0 +1,22 @@
+Bacteria are often found living in aggregated multicellular communities
+known as biofilms. biofilms are three-dimensional structures that confer distinct
+physical and biological properties to the collective of cells living within them. We
+used agent-based modeling to explore whether local cellular interactions were
+sufficient to give rise to global structural features of biofilms. Specifically, we asked
+whether chemorepulsion from a self-produced quorum-sensing molecule, autoinducer-2
+(AI-2), was sufficient to recapitulate biofilm growth and cellular organization observed
+for biofilms of Helicobacter pylori, a common bacterial resident of human stomachs.
+To carry out this modeling, we modified an existing platform, Individual-based
+Dynamics of Microbial Communities Simulator (iDynoMiCS), to incorporate three-
+dimensional chemotaxis, planktonic cells that could join or leave the biofilm struc-
+ture, and cellular production of AI-2. We simulated biofilm growth of previously
+characterized H. pylori strains with various AI-2 production and sensing capacities.
+Using biologically plausible parameters, we were able to recapitulate both the varia-
+tion in biofilm mass and cellular distributions observed with these strains. Specifi-
+cally, the strains that were competent to chemotax away from AI-2 produced smaller
+and more heterogeneously spaced biofilms, whereas the AI-2 chemotaxis-defective
+strains produced larger and more homogeneously spaced biofilms. The model also
+provided new insights into the cellular demographics contributing to the biofilm
+patterning of each strain. Our analysis supports the idea that cellular interactions at
+small spatial and temporal scales are sufficient to give rise to larger-scale emergent
+properties of biofilms.
