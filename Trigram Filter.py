@@ -4,28 +4,29 @@ import json
 import subprocess
 from multiprocessing import Pool
 
-def word_filter(words: list[str]) -> list[str]:
-    word_list = []
-    for word in words:
-        # if re.match("\n", word):
-        word_len_temp = len(word)
-        #average word size between 4 and 8 letters
-        if word_len_temp < 3 or word_len_temp > 8:
-            continue
-        #handled ealier
-        # if word == '\n':
-        #     continue
-        #allowance for one special character per word, contractions and sentence punct
-        ##a more agressive filter would allow none
-        if len(re.findall('[^a-z]',word)) > 1:
-            continue
-        #average consonant to vowel ratio 60:40, expected random ratio 50:50 a little too close to be useful
-        word_list.append(word)
+# def word_filter(words: list[str]) -> list[str]:
+#     word_list = []
+#     for word in words:
+#         # if re.match("\n", word):
+#         word_len_temp = len(word)
+#         #average word size between 4 and 8 letters
+#         if word_len_temp < 3 or word_len_temp > 8:
+#             continue
+#         #handled ealier
+#         # if word == '\n':
+#         #     continue
+#         #allowance for one special character per word, contractions and sentence punct
+#         ##a more agressive filter would allow none
+#         if len(re.findall('[^a-z]',word)) > 1:
+#             continue
+#         #average consonant to vowel ratio 60:40, expected random ratio 50:50 a little too close to be useful
+#         word_list.append(word)
 
-    return word_list
+#     return word_list
 
 file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
 # print(os.getcwd())
+file_dir = f'{file_dir}cgzho\\OneDrive\\Documents\\GitHub\\'
 explorer_dir = f'{file_dir}Library-of-Babel-Explorer/'
 pybel_cli = f'{file_dir}Library-Of-Pybel/library_of_babel.py'
 
@@ -99,9 +100,9 @@ shelf = 4
 # vol = 1
 # page = 0
 
-series = range(40,100)
+series = range(0,100)
 
-def wordgen(series,hex_var=0,wall=0,shelf=4):
+def wordgen(series,hex_var=0,wall=0,shelf=5):
     vol = series
     # for vol in series:
     print(vol)
@@ -117,7 +118,7 @@ def wordgen(series,hex_var=0,wall=0,shelf=4):
         body = body.stdout
 
         body = re.sub('Title:.*\n', '', body)
-        body = re.sub('\n', '', body)
+        body = re.sub('\n', ' ', body)
         
         body_list = body.split(' ')
 
@@ -125,7 +126,7 @@ def wordgen(series,hex_var=0,wall=0,shelf=4):
 
         page_score_dict = page_score(word_list_filtered)
 
-        if page_score_dict['page_tri_ratio'] >= 0.1:
+        if page_score_dict['page_tri_ratio'] >= 0.2:
             print('query string')
             print(f'{query_string}')
             print('trigram ratio')
