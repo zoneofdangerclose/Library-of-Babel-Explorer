@@ -18,8 +18,8 @@ logging.basicConfig(filename=logfile, encoding='utf-8', level=logging.INFO)
 logger.info('Start')
 
 
-vol_range = range(10)
-shelf_range = range(10)
+vol_range = range(40,50)
+shelf_range = range(1,10)
 
 pso_iterations_dir = "C:/Users/cgzho/OneDrive/Documents/Python Scripts/Partical Swarm Optimization/pso_iterations"
 file_dir = os.getcwd().replace(os.path.basename(os.getcwd()),"")
@@ -89,13 +89,13 @@ def page_score(body_list: list[str]):
 
 hex_var = 0
 wall = 0
-shelf = 4
-# vol = 1
+shelf = 0
+vol = 0
 # page = 0
 
-series = range(0,100)
+series = range(0,10)
 
-def wordgen(series,shelf,hex_var=0,wall=0):
+def wordgen(series=0,shelf=0,hex_var=0,wall=0):
     vol = series
     
     # for vol in series:
@@ -107,7 +107,12 @@ def wordgen(series,shelf,hex_var=0,wall=0):
 
     # pages_list = range(410)
 
+    # print(f'{hex_var}:{wall}:{shelf}:{vol}:')
+    # logger.info(f'particle hex:wall:shelf {hex_var}:{wall}:{shelf}')
+
     pages_list = random.sample(range(410), 4)
+
+    query_dict.update({'query_string': f'{hex_var}:{wall}:{shelf}:{vol}:{pages_list}'})
     for page in pages_list:
 
         query_string = f'{hex_var}:{wall}:{shelf}:{vol}:{page}'
@@ -136,7 +141,9 @@ def wordgen(series,shelf,hex_var=0,wall=0):
         # prevent divzero
         page_score_sum = 0.1
 
-    return page_score_sum
+    query_dict.update({'page_score_sum':page_score_sum })
+
+    return query_dict
 
 
 # if __name__ == '__main__':
@@ -147,11 +154,10 @@ def wordgen(series,shelf,hex_var=0,wall=0):
 
 
 def fitness_function(x, y):
-    #x is vol
-    #y is shelf
-    # This is a sample function with multiple peaks
-    page_score_sum = wordgen(series=int(x), shelf=int(y))
-    return page_score_sum 
+
+    query_dict_temp = wordgen(hex_var=int(x), wall=int(y))
+    # page_score_sum = query_dict_temp['page_score_sum']
+    return query_dict_temp
 
 
 
@@ -160,10 +166,12 @@ def fitness_function(x, y):
 max_iterations = 10
 grid_size = max(vol_range)*max(shelf_range)
 num_particles = int(grid_size/1)
-w = 1      # Inertia weight - controls influence of previous velocity
+w = 1     # Inertia weight - controls influence of previous velocity
 c1 = 2     # Cognitive weight - controls influence of personal best
 # c2 = 2     # Social weight - controls influence of global best
-c2 = 4
+c2 = 1
+
+logger.info(f'Weights: Inertia weight w {w}, Cognitive weight c1 {c1}, Social weight c2 {c2}')
 
 # Normalize grid coordinates to appropriate range for fitness function
 # For the example function, values between -3 and 3 work well
@@ -175,13 +183,14 @@ def normalize_position(pos):
 class Particle:
     def __init__(self):
         # Random initial position (0 to grid_size-1)
-        self.position = np.random.randint(0, grid_size, 2)  # [x, y]
+        self.position = np.asarray([np.random.randint(min(vol_range),max(vol_range)) , np.random.randint(min(shelf_range),max(shelf_range))])  # [x, y]
         # Random initial velocity
         self.velocity = np.random.uniform(-5, 5, 2)
         # Initialize personal best to initial position
         self.best_position = self.position.copy()
         # Calculate fitness of initial position
-        self.best_score = self.evaluate()
+        particle_dict = self.evaluate()
+        self.best_score = particle_dict['page_score_sum']
     
     def evaluate(self):
         # Normalize position to fitness function domain
@@ -196,7 +205,7 @@ class Particle:
         cognitive_component = c1 * r1 * (self.best_position - self.position)
         social_component = c2 * r2 * (global_best_position - self.position)
         
-        self.velocity = w * self.velocity + cognitive_component + social_component
+        self.velocity = (w* random.randint(1, 2)) * self.velocity + cognitive_component + social_component
         
         # Limit velocity to prevent excessive movement
         self.velocity = np.clip(self.velocity, -15, 15)
@@ -209,7 +218,11 @@ class Particle:
         self.position = np.clip(self.position, 0, grid_size-1)
         
         # Evaluate new position
-        score = self.evaluate()
+        particle_dict = self.evaluate()
+        score = particle_dict['page_score_sum']
+
+        logger.info(f'particle {f'query_sting {particle_dict['query_string']}'}, score {particle_dict['page_score_sum']}')
+
         
         # Update personal best if current position is better
         if score > self.best_score:
@@ -225,7 +238,8 @@ def run_pso():
     
     # Initialize global best
     global_best_position = particles[0].position.copy()
-    global_best_score = particles[0].evaluate()
+    global_dict = particles[0].evaluate()
+    global_best_score = global_dict['page_score_sum']
     
     # Update global best based on all particles' initial positions
     for particle in particles:
@@ -261,7 +275,6 @@ def run_pso():
             norm_pos = normalize_position(particle.position)
             current_positions.append(norm_pos)
 
-            logger.info(f'particle {particle}, position {particle.position}, score {score}')
         
         # Convert to numpy array for plotting
         current_positions = np.array(current_positions)
